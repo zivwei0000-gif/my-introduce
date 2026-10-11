@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>魏語希 Yu-Hsi Wei | 魔法創客與機器人決鬥歷程</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        potter: {
+                            dark: '#0B0D13',
+                            card: 'rgba(18, 22, 33, 0.85)',
+                            gold: '#D4AF37',
+                            goldLight: '#F3E5AB',
+                            parchment: '#F9F6F0',
+                            ink: '#2B2B2B',
+                            magicBlue: '#1E3A8A',
+                            magicGlow: '#60A5FA'
+                        }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'sparkle': 'sparkle 4s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-8px)' },
+                        },
+                        sparkle: {
+                            '0%, 100%': { opacity: 0.3 },
+                            '50%': { opacity: 0.8 },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts: 引入帶有古典神祕感的字型 -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Noto+Serif+TC:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Noto Serif TC', serif;
+            background-color: #08090C;
+            color: #E2E8F0;
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 50% 20%, rgba(212, 175, 55, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 20% 80%, rgba(30, 58, 138, 0.1) 0%, transparent 60%);
+        }
+        .font-cinzel {
+            font-family: 'Cinzel', serif;
+        }
+        /* 魔法羊皮紙與燙金質感卡片 */
+        .magic-card {
+            background: linear-gradient(145deg, rgba(18, 22, 33, 0.95), rgba(10, 13, 20, 0.95));
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(212, 175, 55, 0.25);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), inset 0 0 15px rgba(212, 175, 55, 0.03);
+            position: relative;
+        }
+        .magic-card::before {
+            content: '';
+            position: absolute;
+            top: 4px; left: 4px; right: 4px; bottom: 4px;
+            border: 1px solid rgba(212, 175, 55, 0.08);
+            pointer-events: none;
+        }
+        .magic-card:hover {
+            border-color: rgba(212, 175, 55, 0.6);
+            box-shadow: 0 0 25px rgba(212, 175, 55, 0.15), inset 0 0 20px rgba(212, 175, 55, 0.05);
+        }
+        /* 燙金文字效果 */
+        .gold-text {
+            background: linear-gradient(135deg, #F3E5AB 0%, #D4AF37 50%, #AA7C11 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.2);
+        }
+        /* 神秘滾動條 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #08090C;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1E2330;
+            border-radius: 4px;
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #D4AF37;
+        }
+    </style>
+</head>
+<body class="min-h-screen text-slate-200 selection:bg-amber-500 selection:text-black relative">
+
+    <!-- 魔法星塵背景特效 -->
+    <div class="fixed top-1/4 left-1/4 w-96 h-96 bg-amber-500/5 rounded-full blur-3xl pointer-events-none -z-10 animate-sparkle"></div>
+    <div class="fixed bottom-1/4 right-1/4 w-96 h-96 bg-blue-900/10 rounded-full blur-3xl pointer-events-none -z-10 animate-sparkle"></div>
+
+    <!-- 古典魔法導覽列 -->
+    <nav class="fixed top-0 left-0 w-full bg-potter-dark/90 backdrop-blur-md border-b border-amber-500/20 z-50">
+        <div class="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
+            <a href="#" class="font-cinzel text-lg font-bold tracking-widest text-amber-300 flex items-center gap-3">
+                <span class="w-2 h-2 rounded-full bg-amber-400 shadow-[0_0_8px_#D4AF37]"></span>
+                YU-HSI WEI // 魔法編年史
+            </a>
+            <div class="space-x-8 text-xs font-cinzel tracking-widest hidden md:flex items-center text-amber-100/80">
+                <a href="#about" class="hover:text-amber-300 transition-colors uppercase">✦ 關於創作者</a>
+                <a href="#competitions" class="hover:text-amber-300 transition-colors uppercase">✦ 魔法決鬥戰報</a>
+                <a href="#journey" class="hover:text-amber-300 transition-colors uppercase">✦ 歷練心路</a>
+                <a href="#spells" class="hover:text-amber-300 transition-colors uppercase">✦ 核心秘術</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 頁首 Hero Section -->
+    <header class="relative pt-40 pb-24 md:pt-52 md:pb-36 overflow-hidden border-b border-amber-500/10 text-center">
+        <div class="max-w-4xl mx-auto px-6 relative z-10">
+            
+            <!-- 學院風徽章 -->
+            <div class="inline-flex items-center gap-2 py-1.5 px-6 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-cinzel tracking-widest uppercase mb-8 shadow-lg shadow-amber-500/5">
+                <span>⚡ 經國創客魔法學院 • 首席決鬥者</span>
+            </div>
+            
+            <h1 class="text-4xl md:text-7xl font-cinzel font-bold tracking-wider mb-6 leading-tight">
+                在金屬與代碼的秘境中 <br>
+                <span class="gold-text">
+                    編織奇蹟的魏語希
+                </span>
+            </h1>
+
+            <p class="text-base md:text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed mb-12 font-light">
+                如同掌握古老咒語般駕馭人型機器人關節；<br>
+                兩度在全國決鬥場上摘下桂冠，於高壓與未知的迷霧中淬鍊出不滅的創客靈魂。
+            </p>
+
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <a href="#competitions" class="magic-card bg-amber-500/10 hover:bg-amber-500/20 text-amber-200 font-cinzel text-xs tracking-widest px-8 py-4 rounded-lg transition-all duration-300 transform hover:-translate-y-1 shadow-lg flex items-center justify-center gap-2">
+                    ✦ 檢視傳奇戰報
+                </a>
+                <a href="#journey" class="magic-card hover:bg-slate-900 text-slate-300 font-cinzel text-xs tracking-widest px-8 py-4 rounded-lg transition-all duration-300 flex items-center justify-center gap-2">
+                    ✦ 閱讀蛻變手札
+                </a>
+            </div>
+
+            <!-- 神秘成就卷軸指標 -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-20 pt-10 border-t border-amber-500/20">
+                <div class="p-4 rounded-lg bg-potter-dark/60 border border-amber-500/20">
+                    <div class="text-2xl md:text-3xl font-cinzel font-bold gold-text">2 連霸</div>
+                    <div class="text-[11px] font-cinzel text-amber-200/60 mt-1 uppercase tracking-wider">資通訊大賽格鬥王者</div>
+                </div>
+                <div class="p-4 rounded-lg bg-potter-dark/60 border border-amber-500/20">
+                    <div class="text-2xl md:text-3xl font-cinzel font-bold text-blue-300">NO.1</div>
+                    <div class="text-[11px] font-cinzel text-amber-200/60 mt-1 uppercase tracking-wider">國中組一般級頂點</div>
+                </div>
+                <div class="p-4 rounded-lg bg-potter-dark/60 border border-amber-500/20">
+                    <div class="text-2xl md:text-3xl font-cinzel font-bold gold-text">AI + 決鬥</div>
+                    <div class="text-[11px] font-cinzel text-amber-200/60 mt-1 uppercase tracking-wider">人形機器人跨域掌控</div>
+                </div>
+                <div class="p-4 rounded-lg bg-potter-dark/60 border border-amber-500/20">
+                    <div class="text-2xl md:text-3xl font-cinzel font-bold text-blue-300">100%</div>
+                    <div class="text-[11px] font-cinzel text-amber-200/60 mt-1 uppercase tracking-wider">高壓禁區沉著應變</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto px-6 py-20 space-y-32">
+
+        <!-- 關於我 About Me -->
+        <section id="about" class="scroll-mt-28">
+            <div class="magic-card rounded-2xl p-8 md:p-14 relative overflow-hidden">
+                <div class="grid md:grid-cols-3 gap-8 items-center">
+                    <div class="md:col-span-1 text-center relative">
+                        <div class="w-36 h-36 rounded-xl mx-auto mb-4 p-1 bg-gradient-to-tr from-amber-500 via-yellow-600 to-amber-300 shadow-2xl animate-float">
+                            <div class="w-full h-full bg-potter-dark rounded-lg flex flex-col items-center justify-center relative overflow-hidden border border-amber-500/40">
+                                <span class="font-cinzel text-3xl font-bold gold-text">YH</span>
+                                <span class="text-[9px] font-cinzel text-amber-300/60 tracking-widest mt-1">MAKER // TAIWAN</span>
+                            </div>
+                        </div>
+                        <h2 class="font-cinzel font-bold text-xl text-amber-100 tracking-wider">魏語希</h2>
+                        <p class="text-xs font-cinzel text-amber-400/80 mt-1">經國國中創客首席學徒</p>
+                    </div>
+
+                    <div class="md:col-span-2 space-y-4">
+                        <div class="flex items-center gap-2">
+                            <span class="w-4 h-[1px] bg-amber-400"></span>
+                            <span class="text-xs font-cinzel text-amber-400 uppercase tracking-widest">THE WIZARD'S PROFILE</span>
+                        </div>
+                        <h3 class="text-2xl font-cinzel font-bold text-white tracking-wide">在金屬機械中注入靈魂，探索自動控制的魔法</h3>
+                        <p class="text-slate-300 leading-relaxed text-sm md:text-base font-light">
+                            我是魏語希，來自桃園市立經國國中創客團隊。我著迷於將冷冰冰的代碼轉化為機械關節精準移動的魔法姿態。在大賽高壓的決鬥場上，我總能保持如魔法師般的絕對冷靜，微調重心與演算法，與團隊齊心奪下多項全國大賽桂冠。
+                        </p>
+                        
+                        <div class="flex flex-wrap gap-2 pt-3">
+                            <span class="bg-amber-500/10 text-amber-300 border border-amber-500/30 text-xs px-3.5 py-1.5 rounded font-cinzel">人型機器人格鬥</span>
+                            <span class="bg-blue-950/60 text-blue-300 border border-blue-500/30 text-xs px-3.5 py-1.5 rounded font-cinzel">AI 任務邏輯陣列</span>
+                            <span class="bg-slate-900 text-slate-300 border border-slate-700 text-xs px-3.5 py-1.5 rounded font-cinzel">高壓賽場重心調校</span>
+                            <span class="bg-slate-900 text-slate-300 border border-slate-700 text-xs px-3.5 py-1.5 rounded font-cinzel">STEAM 魔法創客</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 比賽經驗 Competitions -->
+        <section id="competitions" class="space-y-12 scroll-mt-28">
+            <div class="text-center space-y-3">
+                <span class="text-xs font-cinzel text-amber-400 uppercase tracking-widest">✦ THE TOURNAMENT OF CHAMPIONS ✦</span>
+                <h2 class="text-3xl md:text-4xl font-cinzel font-bold text-white tracking-wider">榮譽戰報與魔法決鬥</h2>
+                <p class="text-slate-400 text-sm max-w-lg mx-auto font-light">兩年間在全國級資通訊競技場上留下的不朽傳奇紀錄</p>
+            </div>
+
+            <div class="space-y-6">
+                <!-- 項目 1 -->
+                <div class="magic-card rounded-xl p-6 md:p-8 relative overflow-hidden transition-all duration-300">
+                    <div class="absolute top-0 right-0 w-1.5 h-full bg-gradient-to-b from-amber-300 via-yellow-500 to-amber-700"></div>
+                    
+                    <div class="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-3">
+                        <div>
+                            <div class="flex items-center gap-2 text-xs font-cinzel text-amber-300">
+                                <span>YEAR 2026 (115學年度)</span>
+                                <span>•</span>
+                                <span>經國創客中心</span>
+                            </div>
+                            <h3 class="text-xl font-cinzel font-bold text-white mt-1">115年度資通訊應用大賽－人型機器人競賽</h3>
+                        </div>
+                        <span class="inline-flex items-center gap-1.5 bg-amber-500/20 text-amber-300 border border-amber-500/40 text-xs px-4 py-2 rounded font-cinzel font-bold w-fit shadow-lg shadow-amber-500/10">
+                            🏆 國中組「格鬥賽—一般級」第一名 (衛冕兩連霸)
+                        </span>
+                    </div>
+
+                    <p class="text-slate-300 text-sm leading-relaxed mb-6 font-light">
+                        代表經國國中創客中心出賽，在國中組一般級強敵環伺的格鬥決鬥場中，憑藉穩健的機體重心調校與極速反應力一路過關斬將，奪得全國冠軍，成功完成該項目「連續兩年霸氣奪冠」的歷史紀錄！
+                    </p>
+
+                    <div class="bg-potter-dark p-4 rounded border border-amber-500/20 text-xs space-y-1.5 text-slate-300">
+                        <div class="flex items-center gap-2 text-amber-300 font-cinzel font-semibold">
+                            <span class="w-1.5 h-1.5 bg-amber-400 rounded-full"></span>
+                            決鬥密技與創客里程碑：
+                        </div>
+                        <p class="pl-3.5 font-light">這項連霸不僅是個人技術的展現，更是學校跨域 STEAM 教育與 AI 實作結合的結晶。關鍵在於預先計算重心偏移量與現場高壓下對關節馬達運作值的精確調整。</p>
+                    </div>
+                </div>
+
+                <!-- 項目 2 -->
+                <div class="magic-card rounded-xl p-6 md:p-8 relative overflow-hidden transition-all duration-300">
+                    <div class="absolute top-0 right-0 w-1.5 h-full bg-gradient-to-b from-blue-400 via-indigo-500 to-blue-700"></div>
+
+                    <div class="flex flex-col md:flex-row md:items-center justify-between mb-4 gap-3">
+                        <div>
+                            <div class="flex items-center gap-2 text-xs font-cinzel text-blue-300">
+                                <span>YEAR 2025 (114學年度)</span>
+                                <span>•</span>
+                                <span>雙創團隊聯賽</span>
+                            </div>
+                            <h3 class="text-xl font-cinzel font-bold text-white mt-1">114學年度中小學資通大賽－人形 AI 機器人競賽</h3>
+                        </div>
+                        <span class="inline-flex items-center gap-1.5 bg-blue-500/20 text-blue-300 border border-blue-500/40 text-xs px-4 py-2 rounded font-cinzel font-bold w-fit shadow-lg shadow-blue-500/10">
+                            🥇 任務組 橫掃北台獲多項大獎
+                        </span>
+                    </div>
+
+                    <p class="text-slate-300 text-sm leading-relaxed mb-6 font-light">
+                        在跨縣市重點科技競技賽事中，與隊友張介瑋組成強大陣容。在考驗自主辨識與動態解題的「任務組」關卡中，發揮精湛操作與團隊默契，從全台頂尖隊伍中脫穎而出。
+                    </p>
+
+                    <div class="bg-potter-dark p-4 rounded border border-blue-500/20 text-xs space-y-1.5 text-slate-300">
+                        <div class="flex items-center gap-2 text-blue-300 font-cinzel font-semibold">
+                            <span class="w-1.5 h-1.5 bg-blue-400 rounded-full"></span>
+                            秘術亮點：
+                        </div>
+                        <p class="pl-3.5 font-light">強調雙人臨場協作，在限時環境下實現高精準度人形機器人路徑判斷與目標物拿取，極度考驗現場應變與演算法修改。</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 心路歷程 Journey -->
+        <section id="journey" class="space-y-12 scroll-mt-28">
+            <div class="text-center space-y-3">
+                <span class="text-xs font-cinzel text-amber-400 uppercase tracking-widest">✦ THE PENSIVE CHRONICLES ✦</span>
+                <h2 class="text-3xl md:text-4xl font-cinzel font-bold text-white tracking-wider">擂台背後的蛻變手札</h2>
+                <p class="text-slate-400 text-sm max-w-lg mx-auto font-light">無數次跌倒與重來，將金屬與程式鑄造成榮耀的魔法修練</p>
+            </div>
+
+            <div class="magic-card rounded-2xl p-8 md:p-14 relative overflow-hidden space-y-12">
+                
+                <!-- 階段 1 -->
+                <div class="relative pl-8 border-l-2 border-amber-500/40 space-y-2 group">
+                    <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-potter-dark border-2 border-amber-400 group-hover:bg-amber-400 transition-colors shadow-[0_0_10px_#D4AF37]"></div>
+                    
+                    <span class="text-xs font-cinzel text-amber-400 tracking-wider">PHASE 01 // 起點 • 關節失調與無數個深夜</span>
+                    <h4 class="text-lg font-cinzel font-bold text-white">「為什麼機器人總在關鍵一刻失去平衡？」</h4>
+                    <p class="text-slate-300 text-sm leading-relaxed font-light">
+                        剛接觸人形機器人時，最常面對的就是動作失調與突發性傾倒。好幾次在訓練賽的前一夜，程式邏輯似乎完美，但機體卻因為微小磨擦力變化而連摔幾十次。那一刻充滿焦慮，但也讓我學會靜下心來細緻檢查每一個伺服馬達的角度數值。
+                    </p>
+                </div>
+
+                <!-- 階段 2 -->
+                <div class="relative pl-8 border-l-2 border-amber-500/40 space-y-2 group">
+                    <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-potter-dark border-2 border-amber-400 group-hover:bg-amber-400 transition-colors shadow-[0_0_10px_#D4AF37]"></div>
+
+                    <span class="text-xs font-cinzel text-amber-400 tracking-wider">PHASE 02 // 轉折 • 高壓決鬥場上的秒級冷靜</span>
+                    <h4 class="text-lg font-cinzel font-bold text-white">「頂住連霸壓力，決鬥場上沒有退縮的餘地」</h4>
+                    <p class="text-slate-300 text-sm leading-relaxed font-light">
+                        帶著「衛冕冠軍」的光環再次站上115年度大賽賽場，心理壓力遠勝以往。對手針對性的策略與現場環境燈光影響，讓比賽變數倍增。我和團隊學會了在哨音響起前的最後幾分鐘，屏息專注於控制器調校，把緊張轉化為極致的專注度。
+                    </p>
+                </div>
+
+                <!-- 階段 3 -->
+                <div class="relative pl-8 border-l-2 border-amber-500/40 space-y-2 group">
+                    <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-potter-dark border-2 border-amber-400 group-hover:bg-amber-400 transition-colors shadow-[0_0_10px_#D4AF37]"></div>
+
+                    <span class="text-xs font-cinzel text-amber-400 tracking-wider">PHASE 03 // 體悟 • 創客精神的真諦</span>
+                    <h4 class="text-lg font-cinzel font-bold text-white">「獎盃會隨時間流逝，而解決問題的勇氣將留在血液裡」</h4>
+                    <p class="text-slate-300 text-sm leading-relaxed font-light">
+                        兩度拿下冠軍後，我體會到創客中心帶給我最寶貴的不是獎盃，而是「面對未知難題時不退縮的強大韌性」。無論未來將面臨多麼複雜的 AI 技術或未知的挑戰，我都確信自己能將問題拆解，一步步打造出理想的解決方案。
+                    </p>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- 核心技術 Spells / Tech Stack -->
+        <section id="spells" class="space-y-8 scroll-mt-28">
+            <div class="text-center space-y-2">
+                <span class="text-xs font-cinzel text-amber-400 uppercase tracking-widest">✦ THE ARSENAL OF SPELLS ✦</span>
+                <h2 class="text-3xl font-cinzel font-bold text-white">核心魔法與技術領域</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="magic-card p-6 rounded-xl space-y-3">
+                    <div class="w-10 h-10 rounded bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-300 font-cinzel font-bold text-lg">01</div>
+                    <h3 class="text-white font-cinzel font-bold">人型機器人操控</h3>
+                    <p class="text-xs text-slate-300 leading-relaxed font-light">多軸伺服馬達協調、高穩健性姿態動作編輯、現場重心微調技術。</p>
+                </div>
+
+                <div class="magic-card p-6 rounded-xl space-y-3">
+                    <div class="w-10 h-10 rounded bg-blue-500/10 border border-blue-500/30 flex items-center justify-center text-blue-300 font-cinzel font-bold text-lg">02</div>
+                    <h3 class="text-white font-cinzel font-bold">AI 與 STEAM 整合</h3>
+                    <p class="text-xs text-slate-300 leading-relaxed font-light">融合跨域科學實作、自動任務邏輯判斷與感測器訊號溝通。</p>
+                </div>
+
+                <div class="magic-card p-6 rounded-xl space-y-3">
+                    <div class="w-10 h-10 rounded bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-300 font-cinzel font-bold text-lg">03</div>
+                    <h3 class="text-white font-cinzel font-bold">團隊協作與高壓抗壓</h3>
+                    <p class="text-xs text-slate-300 leading-relaxed font-light">雙人任務組即時配合、賽場突發狀況應變、比賽限時邏輯重構。</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 頁尾 Footer -->
+    <footer class="border-t border-amber-500/10 bg-potter-dark py-12 mt-24 text-center relative">
+        <div class="max-w-4xl mx-auto px-6 space-y-4">
+            <div class="font-cinzel text-xs tracking-widest gold-text">
+                YU-HSI WEI // ROBOTICS & MAKER CHRONICLES
+            </div>
+            <p class="text-[11px] text-slate-500 font-cinzel">&copy; 2026 YU-HSI WEI. ALL RIGHTS RESERVED. POWERED BY JINGGUO MAKER ACADEMY.</p>
+        </div>
+    </footer>
+
+</body>
+</html>
