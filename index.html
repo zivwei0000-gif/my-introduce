@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>魏語希 Yu-Hsi Wei | 機器人競賽歷程與 CMS 平台</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        potter: {
+                            dark: '#06080D',
+                            card: 'rgba(12, 17, 28, 0.9)',
+                            gold: '#D4AF37',
+                            goldLight: '#F5E6AD',
+                            goldDark: '#8C6F1E',
+                            parchment: '#F9F6F0',
+                            ink: '#1A1A1A',
+                            magicBlue: '#1E3A8A',
+                            magicGlow: '#60A5FA',
+                            crimson: '#7A1C1C'
+                        }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-glow': 'pulseGlow 3s infinite ease-in-out',
+                        'spin-slow': 'spin 15s linear infinite',
+                        'shimmer': 'shimmer 2.5s infinite linear',
+                        'energy-wave': 'energyWave 4s infinite ease-in-out',
+                        'magical-orbit': 'magicalOrbit 10s linear infinite'
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px) rotate(0deg)' },
+                            '50%': { transform: 'translateY(-14px) rotate(1.5deg)' },
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { boxShadow: '0 0 20px rgba(212, 175, 55, 0.25), inset 0 0 15px rgba(212, 175, 55, 0.1)' },
+                            '50%': { boxShadow: '0 0 45px rgba(212, 175, 55, 0.7), 0 0 25px rgba(96, 165, 250, 0.5), inset 0 0 25px rgba(212, 175, 55, 0.25)' }
+                        },
+                        shimmer: {
+                            '0%': { backgroundPosition: '-200% 0' },
+                            '100%': { backgroundPosition: '200% 0' }
+                        },
+                        energyWave: {
+                            '0%, 100%': { opacity: '0.4', transform: 'scale(1)' },
+                            '50%': { opacity: '0.8', transform: 'scale(1.03)' }
+                        },
+                        magicalOrbit: {
+                            '0%': { transform: 'rotate(0deg) translate(6px) rotate(0deg)' },
+                            '100%': { transform: 'rotate(360deg) translate(6px) rotate(-360deg)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Noto+Serif+TC:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        body {
+            font-family: 'Noto Serif TC', serif;
+            background-color: #04060A;
+            color: #E2E8F0;
+            overflow-x: hidden;
+        }
+        .font-cinzel {
+            font-family: 'Cinzel', serif;
+        }
+        
+        /* 動態魔法卡片與懸浮特效 */
+        .magic-card {
+            background: linear-gradient(135deg, rgba(16, 22, 36, 0.94), rgba(7, 10, 18, 0.96));
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(212, 175, 55, 0.35);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(212, 175, 55, 0.05);
+            position: relative;
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .magic-card::before {
+            content: '';
+            position: absolute;
+            top: 4px; left: 4px; right: 4px; bottom: 4px;
+            border: 1px solid rgba(212, 175, 55, 0.15);
+            pointer-events: none;
+            border-radius: inherit;
+            transition: border-color 0.4s ease;
+        }
+        .magic-card:hover {
+            border-color: rgba(212, 175, 55, 0.9);
+            transform: translateY(-6px) scale(1.008);
+            box-shadow: 0 20px 45px rgba(212, 175, 55, 0.3), 0 0 25px rgba(96, 165, 250, 0.25), inset 0 0 25px rgba(212, 175, 55, 0.12);
+        }
+        .magic-card:hover::before {
+            border-color: rgba(96, 165, 250, 0.5);
+        }
+
+        /* 燙金發光文字 */
+        .gold-text {
+            background: linear-gradient(135deg, #FFF5CC 0%, #D4AF37 40%, #FFEFA6 70%, #9A7B1C 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 25px rgba(212, 175, 55, 0.35);
+        }
+
+        /* 脈動發光外框 */
+        .glow-border-anim {
+            position: relative;
+        }
+        .glow-border-anim::after {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            background: linear-gradient(45deg, #D4AF37, #60A5FA, #D4AF37);
+            border-radius: inherit;
+            z-index: -1;
+            opacity: 0.5;
+            filter: blur(8px);
+            animation: pulseGlow 4s infinite ease-in-out;
+        }
+
+        /* 閃耀動態邊框 */
+        .shimmer-border {
+            background: linear-gradient(90deg, rgba(212,175,55,0.1) 0%, rgba(212,175,55,0.9) 50%, rgba(212,175,55,0.1) 100%);
+            background-size: 200% 100%;
+            animation: shimmer 2.5s infinite;
+        }
+
+        /* 創客編輯模式狀態 */
+        .cms-editable-active {
+            outline: 2px dashed #D4AF37 !important;
+            outline-offset: 4px;
+            background-color: rgba(212, 175, 55, 0.1) !important;
+            cursor: text !important;
+        }
+
+        /* 魔法畫廊圖片 Hover 動態縮放 */
+        .magic-img-box {
+            overflow: hidden;
+            position: relative;
+        }
+        .magic-img-box img {
+            transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1), filter 0.5s ease;
+        }
+        .magic-img-box:hover img {
+            transform: scale(1.12) rotate(1deg);
+            filter: brightness(1.15) contrast(1.05);
+        }
+
+        /* 動態能量波紋背景 */
+        .energy-ring {
+            position: absolute;
+            border-radius: 50%;
+            border: 1px solid rgba(212, 175, 55, 0.15);
+            animation: energyWave 6s infinite ease-in-out;
+            pointer-events: none;
+        }
+
+        /* 自訂魔法滾動條 */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #04060A;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1C2333;
+            border-radius: 4px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            transition: background 0.3s;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #D4AF37;
+            box-shadow: 0 0 10px #D4AF37;
+        }
+
+        /* 圖片切換淡入淡出與縮放動畫 */
+        .carousel-slide {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transform: scale(0.96);
+            transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: none;
+        }
+        .carousel-slide.active-slide {
+            opacity: 1;
+            transform: scale(1);
+            pointer-events: auto;
+        }
+    </style>
+</head>
+<body class="min-h-screen text-slate-200 selection:bg-amber-500 selection:text-black relative">
+
+    <canvas id="magicParticleCanvas" class="fixed top-0 left-0 w-full h-full pointer-events-none -z-10 opacity-75"></canvas>
+
+    <!-- 頂部管理員/創客狀態提示條 (預設隱藏) -->
+    <div id="cmsAdminBar" class="hidden fixed top-0 left-0 w-full bg-amber-600/95 text-black text-xs font-bold py-2 px-6 z-50 flex justify-between items-center shadow-2xl backdrop-blur-md border-b border-amber-300">
+        <div class="flex items-center gap-3">
+            <span class="animate-pulse bg-red-900 text-white px-2.5 py-0.5 rounded text-[10px] tracking-wider uppercase shadow">CMS Live Mode</span>
+            <span>⚡ 已啟動創客視覺編輯模式 (直接點擊頁面文字即可即時修改)</span>
+        </div>
+        <div class="flex items-center gap-2 flex-wrap">
+            <button onclick="saveCmsData()" class="bg-slate-900 hover:bg-black text-amber-300 px-3 py-1 rounded text-xs transition flex items-center gap-1 shadow">
+                <i class="fa-solid fa-floppy-disk"></i> 儲存本機
+            </button>
+            <button onclick="exportJsonData()" class="bg-amber-900 hover:bg-amber-950 text-amber-100 px-2.5 py-1 rounded text-xs transition flex items-center gap-1 shadow">
+                <i class="fa-solid fa-file-export"></i> 匯出設定 (JSON)
+            </button>
+            <button onclick="importJsonData()" class="bg-amber-900 hover:bg-amber-950 text-amber-100 px-2.5 py-1 rounded text-xs transition flex items-center gap-1 shadow">
+                <i class="fa-solid fa-file-import"></i> 匯入設定
+            </button>
+            <button onclick="exportFullHtml()" class="bg-emerald-950 hover:bg-emerald-900 text-emerald-300 border border-emerald-500/50 px-3 py-1 rounded text-xs transition flex items-center gap-1 shadow font-bold">
+                <i class="fa-solid fa-download text-emerald-400"></i> 🚀 匯出完整 HTML 檔
+            </button>
+            <button onclick="logoutCms()" class="bg-red-900 hover:bg-red-950 text-white px-3 py-1 rounded text-xs transition">
+                <i class="fa-solid fa-right-from-bracket"></i> 退出管理
+            </button>
+        </div>
+    </div>
+
+    <nav id="mainNavbar" class="fixed top-0 left-0 w-full bg-potter-dark/85 backdrop-blur-md border-b border-amber-500/20 z-40 transition-all duration-300">
+        <div class="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
+            <a href="#" class="font-cinzel text-sm md:text-base font-bold tracking-widest text-amber-300 flex items-center gap-3 group">
+                <span class="w-3 h-3 rounded-full bg-amber-400 shadow-[0_0_15px_#D4AF37] animate-ping"></span>
+                <span class="editable-content transition-colors group-hover:text-amber-100" data-cms-id="nav-title">YU-HSI WEI // 創客競賽編年史</span>
+            </a>
+            <div class="space-x-5 text-[11px] lg:text-xs font-cinzel tracking-widest hidden md:flex items-center text-amber-100/90">
+                <a href="#about" class="hover:text-amber-300 transition-all duration-300 hover:scale-105 uppercase">✦ 關於我</a>
+                <a href="#timeline" class="hover:text-amber-300 transition-all duration-300 hover:scale-105 uppercase">✦ 榮耀軌跡</a>
+                <a href="#competitions" class="hover:text-amber-300 transition-all duration-300 hover:scale-105 uppercase">✦ 競賽戰報</a>
+                <a href="#gallery" class="hover:text-amber-300 transition-all duration-300 hover:scale-105 uppercase">✦ 寫真館</a>
+                <a href="#journey" class="hover:text-amber-300 transition-all duration-300 hover:scale-105 uppercase">✦ 心路歷程</a>
+                
+                <!-- 創客登入按鈕 -->
+                <button onclick="openLoginModal()" id="cmsLoginBtn" class="ml-2 bg-amber-500/15 hover:bg-amber-500/30 border border-amber-500/40 text-amber-300 px-3 py-1.5 lg:px-4 lg:py-2 rounded-lg transition duration-300 flex items-center gap-2 font-bold shadow-md hover:shadow-[0_0_20px_rgba(212,175,55,0.4)]">
+                    <i class="fa-solid fa-wand-magic-sparkles text-xs animate-spin-slow"></i> 創客登入
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <header class="relative pt-48 pb-32 md:pt-56 md:pb-40 overflow-hidden border-b border-amber-500/20 text-center">
+        <!-- 背景能量光環 -->
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-amber-500/5 rounded-full blur-3xl pointer-events-none animate-energy-wave"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] bg-blue-600/10 rounded-full blur-2xl pointer-events-none animate-pulse"></div>
+
+        <div class="max-w-4xl mx-auto px-6 relative z-10">
+            
+            <!-- 學院風徽章 -->
+            <div class="inline-flex items-center gap-2 py-2 px-6 rounded-full bg-amber-500/10 border border-amber-500/40 text-amber-300 text-xs font-cinzel tracking-widest uppercase mb-8 shadow-2xl glow-border-anim animate-float">
+                <i class="fa-solid fa-crown text-amber-400 animate-bounce"></i>
+                <span class="editable-content" data-cms-id="hero-badge">經國國中創客中心 • 人形機器人王者</span>
+            </div>
+            
+            <h1 class="text-4xl md:text-7xl font-cinzel font-bold tracking-wider mb-6 leading-tight">
+                <span class="editable-content inline-block hover:scale-[1.02] transition-transform duration-300" data-cms-id="hero-heading-1">在金屬與代碼的律動中</span> <br>
+                <span class="gold-text editable-content inline-block hover:scale-105 transition-transform duration-300 mt-2" data-cms-id="hero-heading-2">
+                    鍛造極限的魏語希
+                </span>
+            </h1>
+
+            <p class="text-base md:text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed mb-10 font-light editable-content" data-cms-id="hero-description">
+                駕馭人形機器人格鬥關節與 AI 任務算式；<br>
+                從國小 WRO 國際競賽、IEYI 發明展到資通訊大賽霸氣連霸，於高壓擂台上淬鍊創客精神。
+            </p>
+
+            <div class="flex flex-col sm:flex-row justify-center gap-5">
+                <a href="#timeline" class="magic-card bg-amber-500/20 hover:bg-amber-500/35 text-amber-200 font-cinzel text-xs tracking-widest px-8 py-4 rounded-xl transition-all duration-300 transform hover:-translate-y-1.5 shadow-xl flex items-center justify-center gap-2 border border-amber-500/60 group">
+                    <i class="fa-solid fa-trophy text-amber-400 group-hover:rotate-12 transition-transform"></i> 檢視榮耀軌跡
+                </a>
+                <a href="#gallery" class="magic-card hover:bg-slate-900/90 text-slate-200 font-cinzel text-xs tracking-widest px-8 py-4 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 border border-slate-700 hover:border-blue-500/50 group">
+                    <i class="fa-solid fa-robot text-blue-400 group-hover:scale-110 transition-transform"></i> 欣賞機器人寫真
+                </a>
+            </div>
+
+            <!-- 成就指標數據牆 -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-5 mt-24 pt-12 border-t border-amber-500/20">
+                <div class="p-5 rounded-2xl bg-potter-dark/90 border border-amber-500/30 magic-card transform hover:scale-105 transition-all">
+                    <div class="text-2xl md:text-3xl font-cinzel font-bold gold-text editable-content" data-cms-id="stat-1-val">2 連霸</div>
+                    <div class="text-[11px] font-cinzel text-amber-200/70 mt-1.5 uppercase tracking-wider editable-content" data-cms-id="stat-1-lbl">資通訊大賽格鬥組冠軍</div>
+                </div>
+                <div class="p-5 rounded-2xl bg-potter-dark/90 border border-blue-500/30 magic-card transform hover:scale-105 transition-all">
+                    <div class="text-2xl md:text-3xl font-cinzel font-bold text-blue-400 editable-content" data-cms-id="stat-2-val">全台第一</div>
+                    <div class="text-[11px] font-cinzel text-amber-200/70 mt-1.5 uppercase tracking-wider editable-content" data-cms-id="stat-2-lbl">中小學資通大賽任務組</div>
+                </div>
+                <div class="p-5 rounded-2xl bg-potter-dark/90 border border-amber-500/30 magic-card transform hover:scale-105 transition-all">
+                    <div class="text-2xl md:text-3xl font-cinzel font-bold gold-text editable-content" data-cms-id="stat-3-val">WRO & IEYI</div>
+                    <div class="text-[11px] font-cinzel text-amber-200/70 mt-1.5 uppercase tracking-wider editable-content" data-cms-id="stat-3-lbl">國小扎實創客賽事根基</div>
+                </div>
+                <div class="p-5 rounded-2xl bg-potter-dark/90 border border-purple-500/30 magic-card transform hover:scale-105 transition-all">
+                    <div class="text-2xl md:text-3xl font-cinzel font-bold text-purple-400 editable-content" data-cms-id="stat-4-val">亞東科大</div>
+                    <div class="text-[11px] font-cinzel text-amber-200/70 mt-1.5 uppercase tracking-wider editable-content" data-cms-id="stat-4-lbl">受邀表演賽完美展示</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-6 py-24 space-y-36">
+
+        <section id="about" class="scroll-mt-28">
+            <div class="magic-card rounded-3xl p-8 md:p-14 relative overflow-hidden">
+                <div class="absolute -right-20 -bottom-20 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+                <div class="grid md:grid-cols-3 gap-8 items-center relative z-10">
+                    <div class="md:col-span-1 text-center relative">
+                        <!-- 人物寫真/圖標卡片 -->
+                        <div class="w-44 h-44 rounded-3xl mx-auto mb-4 p-1.5 bg-gradient-to-tr from-amber-500 via-yellow-600 to-amber-200 shadow-2xl animate-float glow-border-anim">
+                            <div class="w-full h-full bg-potter-dark rounded-2xl flex flex-col items-center justify-center relative overflow-hidden border border-amber-500/50">
+                                <i class="fa-solid fa-microchip text-5xl text-amber-400 mb-2 animate-pulse"></i>
+                                <span class="font-cinzel text-xl font-bold gold-text editable-content" data-cms-id="profile-name-en">YU-HSI WEI</span>
+                                <span class="text-[9px] font-cinzel text-amber-300/70 tracking-widest mt-1">MAKER & ROBOTICS</span>
+                            </div>
+                        </div>
+                        <h2 class="font-cinzel font-bold text-2xl text-amber-100 tracking-wider editable-content" data-cms-id="profile-name-zh">魏語希</h2>
+                        <p class="text-xs font-cinzel text-amber-400/90 mt-1 editable-content" data-cms-id="profile-title">經國國中創客中心 選手</p>
+                    </div>
+
+                    <div class="md:col-span-2 space-y-5">
+                        <div class="flex items-center gap-2">
+                            <span class="w-6 h-[2px] bg-amber-400 animate-pulse"></span>
+                            <span class="text-xs font-cinzel text-amber-400 uppercase tracking-widest">ABOUT THE MAKER</span>
+                        </div>
+                        <h3 class="text-2xl md:text-3xl font-cinzel font-bold text-white tracking-wide editable-content" data-cms-id="about-heading">自國小扎根創客技術，打造高穩定性機器人靈魂</h3>
+                        <p class="text-slate-300 leading-relaxed text-sm md:text-base font-light editable-content" data-cms-id="about-text">
+                            我是魏語希，來自桃園市立經國國中創客團隊。我的機器人之路始於國小時期，曾參與 WRO 國際奧林匹克機器人大賽與 IEYI 世界青少年創客發明展，打下了堅實的機構設計與程式邏輯基礎。升上國中後專攻人形機器人，並獲邀至亞東科技大學進行表演賽展示。在全國高壓競技場上，我總能維持冷靜沉著，精確調整重心與軸向伺服馬達，奪得資通訊大賽連霸殊榮。
+                        </p>
+                        
+                        <div class="flex flex-wrap gap-2.5 pt-2">
+                            <span class="bg-amber-500/15 text-amber-300 border border-amber-500/40 text-xs px-4 py-2 rounded-xl font-cinzel transition hover:bg-amber-500/30 hover:scale-105"><i class="fa-solid fa-bolt mr-1"></i> 人型機器人格鬥</span>
+                            <span class="bg-blue-950/70 text-blue-300 border border-blue-500/40 text-xs px-4 py-2 rounded-xl font-cinzel transition hover:bg-blue-900 hover:scale-105"><i class="fa-solid fa-brain mr-1"></i> AI 任務控制邏輯</span>
+                            <span class="bg-amber-950/50 text-amber-200 border border-amber-700/50 text-xs px-4 py-2 rounded-xl font-cinzel transition hover:bg-amber-900 hover:scale-105"><i class="fa-solid fa-globe mr-1"></i> WRO & IEYI 賽事經歷</span>
+                            <span class="bg-slate-900 text-slate-300 border border-slate-700 text-xs px-4 py-2 rounded-xl font-cinzel transition hover:bg-slate-800 hover:scale-105"><i class="fa-solid fa-flask mr-1"></i> 亞東科大表演賽受邀</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 新增：榮耀軌跡與得名時間線 -->
+        <section id="timeline" class="space-y-12 scroll-mt-28">
+            <div class="text-center space-y-3">
+                <div class="inline-flex items-center gap-2 text-xs font-cinzel text-amber-400 uppercase tracking-widest">
+                    <span>✦ GLORY TIMELINE ✦</span>
+                </div>
+                <h2 class="text-3xl md:text-4xl font-cinzel font-bold text-white tracking-wider">榮耀軌跡與得名時間線</h2>
+                <p class="text-slate-400 text-sm max-w-lg mx-auto font-light">紀錄在創客與機器人競技之路上的重要里程碑</p>
+            </div>
+
+            <div class="relative max-w-4xl mx-auto px-4 sm:px-0 py-8">
+                <!-- 中間動態發光線 -->
+                <div class="absolute left-7 md:left-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-amber-500/20 via-amber-500/60 to-amber-500/10 transform md:-translate-x-1/2"></div>
+
+                <div class="space-y-12 md:space-y-6">
+                    
+                    <!-- 節點 1: 國小 WRO/IEYI (靠左) -->
+                    <div class="relative flex items-center md:justify-start w-full group">
+                        <div class="absolute left-7 md:left-1/2 w-5 h-5 rounded-full bg-potter-dark border-2 border-emerald-400 transform -translate-x-1/2 group-hover:scale-125 group-hover:bg-emerald-400 transition-all shadow-[0_0_12px_#34D399] z-10"></div>
+                        <div class="w-full md:w-1/2 pl-14 md:pl-0 md:pr-10 text-left md:text-right">
+                            <div class="magic-card border-emerald-500/30 hover:border-emerald-500/90 p-5 md:p-7 rounded-2xl inline-block w-full max-w-md transform transition-transform group-hover:-translate-y-1 text-left">
+                                <div class="text-emerald-400 font-cinzel font-bold text-lg md:text-xl">2023年 (WRO) / 113學年度 (IEYI)</div>
+                                <h4 class="text-white font-cinzel font-bold text-base mt-1 editable-content" data-cms-id="tl-1-title">WRO與IEYI創客發明展</h4>
+                                <p class="text-xs text-slate-300 mt-2 font-light leading-relaxed editable-content" data-cms-id="tl-1-desc">
+                                    參與 WRO 國際奧林匹克機器人大賽 & IEYI 世界青少年創客發明展，累積初期的機構設計與邏輯思維，並榮獲優勝與代表隊經歷。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 節點 2: 114學年度 (靠右) -->
+                    <div class="relative flex items-center md:justify-end w-full group mt-0 md:-mt-8">
+                        <div class="absolute left-7 md:left-1/2 w-5 h-5 rounded-full bg-potter-dark border-2 border-blue-400 transform -translate-x-1/2 group-hover:scale-125 group-hover:bg-blue-400 transition-all shadow-[0_0_12px_#60A5FA] z-10"></div>
+                        <div class="w-full md:w-1/2 pl-14 md:pl-10 text-left">
+                            <div class="magic-card border-blue-500/30 hover:border-blue-500/90 p-5 md:p-7 rounded-2xl inline-block w-full max-w-md transform transition-transform group-hover:-translate-y-1 text-left">
+                                <div class="text-blue-400 font-cinzel font-bold text-lg md:text-xl">2025/06/28 (113學年度)</div>
+                                <h4 class="text-white font-cinzel font-bold text-base mt-1 editable-content" data-cms-id="tl-2-title">中小學資通大賽：雙料大獎</h4>
+                                <p class="text-xs text-slate-300 mt-2 font-light leading-relaxed editable-content" data-cms-id="tl-2-desc">
+                                    代表經國國中奪下人形 AI 機器人競賽「任務組 冠軍」及「團體組 亞軍」，展現精準的動態任務控制與卓越的雙人團隊協作能力。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 節點 3: 115學年度 (靠左) -->
+                    <div class="relative flex items-center md:justify-start w-full group mt-0 md:-mt-8">
+                        <div class="absolute left-7 md:left-1/2 w-5 h-5 rounded-full bg-potter-dark border-2 border-amber-400 transform -translate-x-1/2 group-hover:scale-125 group-hover:bg-amber-400 transition-all shadow-[0_0_12px_#D4AF37] z-10"></div>
+                        <div class="w-full md:w-1/2 pl-14 md:pl-0 md:pr-10 text-left md:text-right">
+                            <div class="magic-card border-amber-500/30 hover:border-amber-500/90 p-5 md:p-7 rounded-2xl inline-block w-full max-w-md transform transition-transform group-hover:-translate-y-1 text-left bg-gradient-to-bl from-amber-500/10 to-transparent relative overflow-visible">
+                                <div class="absolute -top-3 -left-3 md:-right-3 md:-left-auto bg-red-700 text-white text-[10px] px-2.5 py-1 rounded shadow-lg animate-pulse font-bold tracking-widest border border-red-400">🔥 衛冕連霸</div>
+                                <div class="text-amber-400 font-cinzel font-bold text-lg md:text-xl">2026/05/23 (114學年度)</div>
+                                <h4 class="text-white font-cinzel font-bold text-base mt-1 editable-content" data-cms-id="tl-3-title">資通訊大賽：格鬥賽第一名</h4>
+                                <p class="text-xs text-slate-300 mt-2 font-light leading-relaxed editable-content" data-cms-id="tl-3-desc">
+                                    114年度資通訊應用大賽—人型機器人競賽「格鬥賽—一般級」冠軍。頂住賽場壓力，締造隊史霸氣的二連霸衛冕紀錄！
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 節點 4: 亞東科大 (靠右) -->
+                    <div class="relative flex items-center md:justify-end w-full group mt-0 md:-mt-8">
+                        <div class="absolute left-7 md:left-1/2 w-5 h-5 rounded-full bg-potter-dark border-2 border-purple-400 transform -translate-x-1/2 group-hover:scale-125 group-hover:bg-purple-400 transition-all shadow-[0_0_12px_#A78BFA] z-10"></div>
+                        <div class="w-full md:w-1/2 pl-14 md:pl-10 text-left">
+                            <div class="magic-card border-purple-500/30 hover:border-purple-500/90 p-5 md:p-7 rounded-2xl inline-block w-full max-w-md transform transition-transform group-hover:-translate-y-1 text-left">
+                                <div class="text-purple-400 font-cinzel font-bold text-lg md:text-xl">2026/06/27 (邀請賽)</div>
+                                <h4 class="text-white font-cinzel font-bold text-base mt-1 editable-content" data-cms-id="tl-4-title">受邀亞東科大示範表演賽</h4>
+                                <p class="text-xs text-slate-300 mt-2 font-light leading-relaxed editable-content" data-cms-id="tl-4-desc">
+                                    跨級參與大專校院人型機器人邀請表演賽，向大學教授與大專選手展示經國創客中心研發的高穩定性格鬥步態，備受讚譽。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <section id="competitions" class="space-y-12 scroll-mt-28">
+            <div class="text-center space-y-3">
+                <div class="inline-flex items-center gap-2 text-xs font-cinzel text-amber-400 uppercase tracking-widest">
+                    <span>✦ TOURNAMENTS & ACHIEVEMENTS ✦</span>
+                </div>
+                <h2 class="text-3xl md:text-4xl font-cinzel font-bold text-white tracking-wider">競賽榮譽與真實戰報</h2>
+                <p class="text-slate-400 text-sm max-w-lg mx-auto font-light">從國小至國中，紀錄每一次跨越極限的榮耀瞬間與賽事細節</p>
+            </div>
+
+            <!-- 賽事動態清單容器 -->
+            <div id="competitionsContainer" class="space-y-8">
+
+                <!-- 賽事 1: 亞東科技大學人型機器人邀請表演賽 -->
+                <div class="magic-card rounded-2xl p-6 md:p-9 relative overflow-hidden transition-all duration-300 transform hover:-translate-y-1">
+                    <div class="absolute top-0 right-0 w-2.5 h-full bg-gradient-to-b from-purple-400 to-indigo-600"></div>
+
+                    <div class="flex flex-col md:flex-row md:items-center justify-between mb-5 gap-3 border-b border-purple-500/20 pb-4">
+                        <div>
+                            <div class="flex items-center gap-2 text-xs font-cinzel text-purple-300">
+                                <span><i class="fa-solid fa-calendar-days mr-1"></i> 2026年06月27日</span>
+                                <span>•</span>
+                                <span>大專校院展示</span>
+                            </div>
+                            <h3 class="text-xl md:text-2xl font-cinzel font-bold text-white mt-1.5 editable-content" data-cms-id="comp-0-title">亞東科技大學人型機器人邀請表演賽</h3>
+                        </div>
+                        <span class="inline-flex items-center gap-1.5 bg-purple-500/20 text-purple-300 border border-purple-500/50 text-xs px-4 py-2.5 rounded-xl font-cinzel font-bold shadow-md">
+                            <i class="fa-solid fa-handshake-angle text-purple-300"></i>
+                            <span class="editable-content" data-cms-id="comp-0-award">受邀演出 • 獲大會特別讚譽</span>
+                        </span>
+                    </div>
+
+                    <p class="text-slate-300 text-sm md:text-base leading-relaxed mb-6 font-light editable-content" data-cms-id="comp-0-desc">
+                        獲邀至亞東科技大學參與人型機器人示範表演賽，向大學教授、大專選手及現場觀眾展示國中階段優異的人形機器人格鬥步態與高度穩定性的動態動作編排，展現經國創客中心領先的教研成果。
+                    </p>
+
+                    <!-- 相關比賽影片與紀錄連結 -->
+                    <div class="mt-4 pt-3 border-t border-purple-500/15 flex flex-wrap items-center justify-between gap-3">
+                        <span class="text-xs text-purple-300/80 font-cinzel flex items-center gap-1.5">
+                            <i class="fa-brands fa-youtube text-red-500"></i> 比賽精彩實況紀錄：
+                        </span>
+                        <a href="https://youtube.com/playlist?list=PLRxWxCIwXKS8&si=Xh-dHSitMiEqPLG8" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-xs text-red-300 hover:text-white bg-red-950/40 hover:bg-red-900/60 px-3.5 py-1.5 rounded-lg border border-red-500/40 transition shadow-sm font-bold">
+                            <i class="fa-solid fa-video text-[10px]"></i>
+                            <span class="editable-content" data-cms-id="comp-0-video">亞東科大表演賽實況影片 (YouTube 播放清單)</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 賽事 2: 115年度資通訊應用大賽 -->
+                <div class="magic-card rounded-2xl p-6 md:p-9 relative overflow-hidden transition-all duration-300 transform hover:-translate-y-1">
+                    <div class="absolute top-0 right-0 w-2.5 h-full bg-gradient-to-b from-amber-300 via-yellow-500 to-amber-700"></div>
+                    
+                    <div class="flex flex-col md:flex-row md:items-center justify-between mb-5 gap-3 border-b border-amber-500/20 pb-4">
+                        <div>
+                            <div class="flex items-center gap-2 text-xs font-cinzel text-amber-300">
+                                <span><i class="fa-solid fa-calendar-days mr-1"></i> 2026年05月23日 (114學年度)</span>
+                                <span>•</span>
+                                <span>經國國中創客中心</span>
+                            </div>
+                            <h3 class="text-xl md:text-2xl font-cinzel font-bold text-white mt-1.5 editable-content" data-cms-id="comp-1-title">114年度資通訊應用大賽－人型機器人競賽</h3>
+                        </div>
+                        <span class="inline-flex items-center gap-2 bg-amber-500/20 text-amber-300 border border-amber-500/60 text-xs px-4 py-2.5 rounded-xl font-cinzel font-bold shadow-lg shadow-amber-500/10 animate-pulse-glow">
+                            <i class="fa-solid fa-trophy text-amber-400 animate-spin-slow"></i>
+                            <span class="editable-content" data-cms-id="comp-1-award">國中組「格鬥賽—一般級」第一名 (衛冕二連霸)</span>
+                        </span>
+                    </div>
+
+                    <p class="text-slate-300 text-sm md:text-base leading-relaxed mb-6 font-light editable-content" data-cms-id="comp-1-desc">
+                        代表桃園市立經國國中創客中心出賽，在強敵環伺的全國賽場上，憑藉高穩健度的重心微調與瞬間反應擊敗眾多對手，勇奪冠軍！這不僅是連續第二年稱霸該項目，更締造了創客隊史上的霸氣二連霸紀錄。
+                    </p>
+
+                    <div class="bg-potter-dark/95 p-4 rounded-xl border border-amber-500/25 text-xs space-y-2 text-slate-300">
+                        <div class="flex items-center gap-2 text-amber-300 font-cinzel font-semibold">
+                            <i class="fa-solid fa-key"></i>
+                            <span>勝出關鍵與創客精神：</span>
+                        </div>
+                        <p class="pl-5 font-light leading-relaxed editable-content" data-cms-id="comp-1-detail">
+                            對伺服馬達扭力極限的精準掌握，以及高壓決鬥時不慌亂的臨場機控技術，成功將經國創客中心深耕的 AI 與 STEAM 跨域教育轉化為戰場勝勢。
+                        </p>
+                    </div>
+
+                    <!-- 相關新聞報導連結 -->
+                    <div class="mt-4 pt-3 border-t border-amber-500/15 flex flex-wrap items-center justify-between gap-3">
+                        <span class="text-xs text-amber-300/80 font-cinzel flex items-center gap-1.5">
+                            <i class="fa-solid fa-newspaper text-amber-400"></i> 媒體新聞報導與公告：
+                        </span>
+                        <a href="https://www.peopo.org/news/847991" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-xs text-amber-300 hover:text-amber-100 bg-amber-500/10 hover:bg-amber-500/20 px-3.5 py-1.5 rounded-lg border border-amber-500/30 transition shadow-sm">
+                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                            <span class="editable-content" data-cms-id="comp-1-news">經國國中科技教育 魏語希兩年稱霸資通訊大賽</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 賽事 3: 114學年度中小學資通大賽 -->
+                <div class="magic-card rounded-2xl p-6 md:p-9 relative overflow-hidden transition-all duration-300 transform hover:-translate-y-1">
+                    <div class="absolute top-0 right-0 w-2.5 h-full bg-gradient-to-b from-blue-400 via-indigo-500 to-blue-700"></div>
+
+                    <div class="flex flex-col md:flex-row md:items-center justify-between mb-5 gap-3 border-b border-blue-500/20 pb-4">
+                        <div>
+                            <div class="flex items-center gap-2 text-xs font-cinzel text-blue-300">
+                                <span><i class="fa-solid fa-calendar-days mr-1"></i> 2025年06月28日 (113學年度)</span>
+                                <span>•</span>
+                                <span>經國國中 AI 隊</span>
+                            </div>
+                            <h3 class="text-xl md:text-2xl font-cinzel font-bold text-white mt-1.5 editable-content" data-cms-id="comp-2-title">113學年度中小學資通大賽人形 AI 機器人競賽</h3>
+                        </div>
+                        <div class="flex flex-col sm:flex-row gap-2">
+                            <span class="inline-flex items-center gap-1.5 bg-blue-500/20 text-blue-300 border border-blue-500/50 text-xs px-3.5 py-2 rounded-xl font-cinzel font-bold shadow-md">
+                                <i class="fa-solid fa-medal text-amber-300"></i>
+                                <span class="editable-content" data-cms-id="comp-2-award-1">任務組 冠軍</span>
+                            </span>
+                            <span class="inline-flex items-center gap-1.5 bg-indigo-500/20 text-indigo-300 border border-indigo-500/50 text-xs px-3.5 py-2 rounded-xl font-cinzel font-bold shadow-md">
+                                <i class="fa-solid fa-award text-slate-300"></i>
+                                <span class="editable-content" data-cms-id="comp-2-award-2">團體組 亞軍</span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <p class="text-slate-300 text-sm md:text-base leading-relaxed mb-6 font-light editable-content" data-cms-id="comp-2-desc">
+                        與隊友組成聯隊代表經國國中出擊，橫掃全台頂尖隊伍。在考驗高難度影像辨識與目標拿取動作的「任務組」中展現無懈可擊的程式控制技術勇奪冠軍；隨後在結合任務與格鬥對戰的「團體組」賽事中再度發揮強大整合力獲得亞軍！
+                    </p>
+
+                    <div class="bg-potter-dark/95 p-4 rounded-xl border border-blue-500/25 text-xs space-y-2 text-slate-300">
+                        <div class="flex items-center gap-2 text-blue-300 font-cinzel font-semibold">
+                            <i class="fa-solid fa-users"></i>
+                            <span>團隊協作與邏輯：</span>
+                        </div>
+                        <p class="pl-5 font-light leading-relaxed editable-content" data-cms-id="comp-2-detail">
+                            雙人組賽事高度考驗即時動態溝通，在限時場地環境下達成極高精準度的人形機器人自動路徑辨識與任務執行。
+                        </p>
+                    </div>
+
+                    <!-- 相關新聞報導連結 -->
+                    <div class="mt-4 pt-3 border-t border-blue-500/15 flex flex-wrap items-center justify-between gap-3">
+                        <span class="text-xs text-blue-300/80 font-cinzel flex items-center gap-1.5">
+                            <i class="fa-solid fa-newspaper text-blue-400"></i> 媒體新聞報導與公告：
+                        </span>
+                        <a href="https://www.peopo.org/news/813383" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-xs text-blue-300 hover:text-blue-100 bg-blue-500/10 hover:bg-blue-500/20 px-3.5 py-1.5 rounded-lg border border-blue-500/30 transition shadow-sm">
+                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                            <span class="editable-content" data-cms-id="comp-2-news">【雙喜臨門】經國國中雙創機器人團隊橫掃北台！</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 賽事 4: WRO 與 IEYI 賽事經歷 -->
+                <div class="magic-card rounded-2xl p-6 md:p-9 relative overflow-hidden transition-all duration-300 transform hover:-translate-y-1">
+                    <div class="absolute top-0 right-0 w-2.5 h-full bg-gradient-to-b from-amber-600 to-emerald-600"></div>
+
+                    <div class="flex flex-col md:flex-row md:items-center justify-between mb-5 gap-3 border-b border-emerald-500/20 pb-4">
+                        <div>
+                            <div class="flex items-center gap-2 text-xs font-cinzel text-emerald-300">
+                                <span><i class="fa-solid fa-seedling mr-1"></i> 2023年 (WRO) / 113學年度 (IEYI)</span>
+                                <span>•</span>
+                                <span>國際與創客大賽</span>
+                            </div>
+                            <h3 class="text-xl md:text-2xl font-cinzel font-bold text-white mt-1.5 editable-content" data-cms-id="comp-4-title">WRO 國際奧林匹克機器人大賽 & IEYI 世界青少年創客發明展</h3>
+                        </div>
+                        <span class="inline-flex items-center gap-1.5 bg-emerald-500/20 text-emerald-300 border border-emerald-500/50 text-xs px-4 py-2.5 rounded-xl font-cinzel font-bold shadow-md">
+                            <i class="fa-solid fa-award text-emerald-400"></i>
+                            <span class="editable-content" data-cms-id="comp-4-award">競賽優勝與代表隊經驗</span>
+                        </span>
+                    </div>
+
+                    <p class="text-slate-300 text-sm md:text-base leading-relaxed mb-6 font-light editable-content" data-cms-id="comp-4-desc">
+                        代表參賽 WRO 國際奧林匹克機器人大賽以及 IEYI 世界青少年創客發明展，從邏輯積木、感測器整合到實作創意發明，累積了豐厚的科技競技經驗。
+                    </p>
+
+                    <!-- 相關新聞報導連結 -->
+                    <div class="mt-4 pt-3 border-t border-emerald-500/15 flex flex-wrap items-center justify-between gap-3">
+                        <span class="text-xs text-emerald-300/80 font-cinzel flex items-center gap-1.5">
+                            <i class="fa-solid fa-newspaper text-emerald-400"></i> 媒體新聞報導與公告：
+                        </span>
+                        <div class="flex flex-wrap gap-2">
+                            <a href="https://www.peopo.org/news/799460" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-xs text-emerald-300 hover:text-emerald-100 bg-emerald-500/10 hover:bg-emerald-500/20 px-3.5 py-1.5 rounded-lg border border-emerald-500/30 transition shadow-sm">
+                                <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                                <span class="editable-content" data-cms-id="comp-4-news-1">勇奪IEYI發明賽大獎 經國國中創造力爆發！</span>
+                            </a>
+                            <a href="https://www.cna.com.tw/postwrite/chi/356479" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 text-xs text-emerald-300 hover:text-emerald-100 bg-emerald-500/10 hover:bg-emerald-500/20 px-3.5 py-1.5 rounded-lg border border-emerald-500/30 transition shadow-sm">
+                                <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                                <span class="editable-content" data-cms-id="comp-4-news-2">台灣代表隊赴巴拿馬參加 2023 WRO</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <section id="gallery" class="space-y-12 scroll-mt-28">
+            <div class="text-center space-y-3">
+                <div class="inline-flex items-center gap-2 text-xs font-cinzel text-amber-400 uppercase tracking-widest">
+                    <span>✦ ROBOTICS & AWARDS GALLERY ✦</span>
+                </div>
+                <h2 class="text-3xl md:text-4xl font-cinzel font-bold text-white tracking-wider">機器人寫真與頒獎榮耀</h2>
+                <p class="text-slate-400 text-sm max-w-lg mx-auto font-light">高壓賽場上並肩作戰的金屬戰友與榮耀時刻</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                
+                <!-- 寫真卡片 1: 人形機器人特寫 -->
+                <div class="magic-card rounded-2xl overflow-hidden flex flex-col group">
+                    <div class="h-64 relative magic-img-box bg-potter-dark/80 group/carousel">
+                        <div id="carousel-container-1" class="w-full h-full relative overflow-hidden cursor-pointer" onclick="openZoomModal(document.querySelector('.carousel-img-1.active-slide').src)">
+                            <img id="carousel-img-1-1" src="https://ai-code-editor.googleusercontent.com/user_files/image_9afad7.jpg" alt="人形機器人特寫" class="carousel-img-1 carousel-slide active-slide w-full h-full object-cover">
+                            <img id="carousel-img-1-2" src="https://placehold.co/800x600/0c111c/60a5fa?text=Robot+Detail" alt="人形機器人特寫2" class="carousel-img-1 carousel-slide w-full h-full object-cover">
+                        </div>
+                        <!-- 切換按鈕 -->
+                        <button onclick="event.stopPropagation(); prevSlide(1)" class="absolute left-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-amber-500/80 text-white p-2 rounded-full opacity-0 group-hover/carousel:opacity-100 transition-all z-20"><i class="fa-solid fa-chevron-left text-xs"></i></button>
+                        <button onclick="event.stopPropagation(); nextSlide(1)" class="absolute right-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-amber-500/80 text-white p-2 rounded-full opacity-0 group-hover/carousel:opacity-100 transition-all z-20"><i class="fa-solid fa-chevron-right text-xs"></i></button>
+                        <div class="absolute bottom-3 right-3 bg-potter-dark/80 backdrop-blur-md px-3 py-1 rounded-lg border border-amber-500/40 text-[11px] font-cinzel text-amber-300 pointer-events-none z-10">
+                            <i class="fa-solid fa-expand text-xs mr-1"></i> 點擊放大
+                        </div>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-between space-y-4">
+                        <div>
+                            <span class="text-[11px] font-cinzel text-amber-400 uppercase tracking-widest">FIGHTER ROBOT</span>
+                            <h3 class="text-lg font-cinzel font-bold text-white mt-1 editable-content" data-cms-id="gallery-1-title">資通訊大賽格鬥機器人</h3>
+                            <p class="text-xs text-slate-300 mt-2 leading-relaxed font-light editable-content" data-cms-id="gallery-1-desc">
+                                具備多軸伺服馬達與精準重心調節，專為高壓對戰與迅速轉向而鍛造的頂尖格鬥機體。
+                            </p>
+                        </div>
+                        <div class="pt-3 border-t border-amber-500/15 flex justify-between items-center">
+                            <span class="text-[11px] font-cinzel text-amber-300/70">經國創客中心實驗室</span>
+                            <button onclick="openImageEditor(1)" class="cms-only-btn hidden bg-amber-500 hover:bg-amber-400 text-black px-2.5 py-1 rounded text-[10px] font-bold shadow">
+                                <i class="fa-solid fa-pen"></i> 更換照片
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 寫真卡片 2: 頒獎典禮榮耀 -->
+                <div class="magic-card rounded-2xl overflow-hidden flex flex-col group">
+                    <div class="h-64 relative magic-img-box bg-potter-dark/80 group/carousel">
+                        <div id="carousel-container-2" class="w-full h-full relative overflow-hidden cursor-pointer" onclick="openZoomModal(document.querySelector('.carousel-img-2.active-slide').src)">
+                            <img id="carousel-img-2-1" src="https://ai-code-editor.googleusercontent.com/user_files/image_9b0160.jpg" alt="頒獎典禮榮耀" class="carousel-img-2 carousel-slide active-slide w-full h-full object-cover">
+                            <img id="carousel-img-2-2" src="https://placehold.co/800x600/0c111c/a78bfa?text=Award+Moment" alt="頒獎典禮榮耀2" class="carousel-img-2 carousel-slide w-full h-full object-cover">
+                        </div>
+                        <!-- 切換按鈕 -->
+                        <button onclick="event.stopPropagation(); prevSlide(2)" class="absolute left-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-amber-500/80 text-white p-2 rounded-full opacity-0 group-hover/carousel:opacity-100 transition-all z-20"><i class="fa-solid fa-chevron-left text-xs"></i></button>
+                        <button onclick="event.stopPropagation(); nextSlide(2)" class="absolute right-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-amber-500/80 text-white p-2 rounded-full opacity-0 group-hover/carousel:opacity-100 transition-all z-20"><i class="fa-solid fa-chevron-right text-xs"></i></button>
+                        <div class="absolute bottom-3 right-3 bg-potter-dark/80 backdrop-blur-md px-3 py-1 rounded-lg border border-amber-500/40 text-[11px] font-cinzel text-amber-300 pointer-events-none z-10">
+                            <i class="fa-solid fa-expand text-xs mr-1"></i> 點擊放大
+                        </div>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-between space-y-4">
+                        <div>
+                            <span class="text-[11px] font-cinzel text-amber-400 uppercase tracking-widest">AWARD CEREMONY</span>
+                            <h3 class="text-lg font-cinzel font-bold text-white mt-1 editable-content" data-cms-id="gallery-2-title">全國冠軍頒獎與榮譽時刻</h3>
+                            <p class="text-xs text-slate-300 mt-2 leading-relaxed font-light editable-content" data-cms-id="gallery-2-desc">
+                                魏語希於全國大型賽事中奪得金牌與連霸殊榮時，接受大會頒獎的閃耀時刻。
+                            </p>
+                        </div>
+                        <div class="pt-3 border-t border-amber-500/15 flex justify-between items-center">
+                            <span class="text-[11px] font-cinzel text-amber-300/70">全國賽事舞台</span>
+                            <button onclick="openImageEditor(2)" class="cms-only-btn hidden bg-amber-500 hover:bg-amber-400 text-black px-2.5 py-1 rounded text-[10px] font-bold shadow">
+                                <i class="fa-solid fa-pen"></i> 更換照片
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 寫真卡片 3: 團隊與實作演練 -->
+                <div class="magic-card rounded-2xl overflow-hidden flex flex-col group">
+                    <div class="h-64 relative magic-img-box bg-potter-dark/80 group/carousel">
+                        <div id="carousel-container-3" class="w-full h-full relative overflow-hidden cursor-pointer" onclick="openZoomModal(document.querySelector('.carousel-img-3.active-slide').src)">
+                            <img id="carousel-img-3-1" src="https://placehold.co/800x600/0c111c/d4af37?text=Maker+Lab+Workspace" alt="創客實驗室日常" class="carousel-img-3 carousel-slide active-slide w-full h-full object-cover">
+                            <img id="carousel-img-3-2" src="https://placehold.co/800x600/0c111c/34d399?text=Practice+Session" alt="創客實驗室日常2" class="carousel-img-3 carousel-slide w-full h-full object-cover">
+                        </div>
+                        <!-- 切換按鈕 -->
+                        <button onclick="event.stopPropagation(); prevSlide(3)" class="absolute left-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-amber-500/80 text-white p-2 rounded-full opacity-0 group-hover/carousel:opacity-100 transition-all z-20"><i class="fa-solid fa-chevron-left text-xs"></i></button>
+                        <button onclick="event.stopPropagation(); nextSlide(3)" class="absolute right-2 top-1/2 -translate-y-1/2 bg-black/60 hover:bg-amber-500/80 text-white p-2 rounded-full opacity-0 group-hover/carousel:opacity-100 transition-all z-20"><i class="fa-solid fa-chevron-right text-xs"></i></button>
+                        <div class="absolute bottom-3 right-3 bg-potter-dark/80 backdrop-blur-md px-3 py-1 rounded-lg border border-amber-500/40 text-[11px] font-cinzel text-amber-300 pointer-events-none z-10">
+                            <i class="fa-solid fa-expand text-xs mr-1"></i> 點擊放大
+                        </div>
+                    </div>
+                    <div class="p-6 flex-1 flex flex-col justify-between space-y-4">
+                        <div>
+                            <span class="text-[11px] font-cinzel text-amber-400 uppercase tracking-widest">MAKER WORKSPACE</span>
+                            <h3 class="text-lg font-cinzel font-bold text-white mt-1 editable-content" data-cms-id="gallery-3-title">創客中心除錯與演練</h3>
+                            <p class="text-xs text-slate-300 mt-2 leading-relaxed font-light editable-content" data-cms-id="gallery-3-desc">
+                                在經國國中創客實驗室內進行機器人步態微調與程式碼反覆測試的專注日常。
+                            </p>
+                        </div>
+                        <div class="pt-3 border-t border-amber-500/15 flex justify-between items-center">
+                            <span class="text-[11px] font-cinzel text-amber-300/70">創客團隊日常</span>
+                            <button onclick="openImageEditor(3)" class="cms-only-btn hidden bg-amber-500 hover:bg-amber-400 text-black px-2.5 py-1 rounded text-[10px] font-bold shadow">
+                                <i class="fa-solid fa-pen"></i> 更換照片
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <section id="journey" class="space-y-12 scroll-mt-28">
+            <div class="text-center space-y-3">
+                <span class="text-xs font-cinzel text-amber-400 uppercase tracking-widest">✦ THE CHRONICLES OF REFLECTION ✦</span>
+                <h2 class="text-3xl md:text-4xl font-cinzel font-bold text-white tracking-wider">擂台背後的蛻變手札</h2>
+                <p class="text-slate-400 text-sm max-w-lg mx-auto font-light">金屬齒輪與軟體邏輯交織出的成長軌跡</p>
+            </div>
+
+            <div class="magic-card rounded-3xl p-8 md:p-14 relative overflow-hidden space-y-12">
+                
+                <!-- 階段 1 -->
+                <div class="relative pl-8 border-l-2 border-amber-500/40 space-y-2.5 group">
+                    <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-potter-dark border-2 border-amber-400 group-hover:bg-amber-400 group-hover:scale-125 transition-all shadow-[0_0_12px_#D4AF37]"></div>
+                    
+                    <span class="text-xs font-cinzel text-amber-400 tracking-wider">PHASE 01 // 啟蒙 • 國小 WRO & IEYI 的初次試煉</span>
+                    <h4 class="text-lg font-cinzel font-bold text-white editable-content" data-cms-id="journey-1-title">「程式與硬體結下的魔法不解之緣」</h4>
+                    <p class="text-slate-300 text-sm leading-relaxed font-light editable-content" data-cms-id="journey-1-desc">
+                        國小第一次代表參加 WRO 國際奧林匹克機器人大賽與 IEYI 世界青少年創客發明展時，面對複雜的樂高積木機構與感測器觸發失誤，曾感到迷惘。但正是那段在實驗室摸索的時光，點燃了我對自動控制的熱情。
+                    </p>
+                </div>
+
+                <!-- 階段 2 -->
+                <div class="relative pl-8 border-l-2 border-amber-500/40 space-y-2.5 group">
+                    <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-potter-dark border-2 border-amber-400 group-hover:bg-amber-400 group-hover:scale-125 transition-all shadow-[0_0_12px_#D4AF37]"></div>
+
+                    <span class="text-xs font-cinzel text-amber-400 tracking-wider">PHASE 02 // 淬鍊 • 經國創客中心與衛冕兩連霸</span>
+                    <h4 class="text-lg font-cinzel font-bold text-white editable-content" data-cms-id="journey-2-title">「衛冕光環下的絕對冷靜」</h4>
+                    <p class="text-slate-300 text-sm leading-relaxed font-light editable-content" data-cms-id="journey-2-desc">
+                        來到經國國中創客中心後，挑戰升級為多軸人形機器人格鬥與 AI 任務判斷。在 114 年度資通訊大賽尋求二連霸時，面臨著現場燈光干擾與對手特別設計的打法壓力。我和團隊學會屏息專注於微調控制器，將不安轉化為極致的運算精準度。
+                    </p>
+                </div>
+
+                <!-- 階段 3 -->
+                <div class="relative pl-8 border-l-2 border-amber-500/40 space-y-2.5 group">
+                    <div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-potter-dark border-2 border-amber-400 group-hover:bg-amber-400 group-hover:scale-125 transition-all shadow-[0_0_12px_#D4AF37]"></div>
+
+                    <span class="text-xs font-cinzel text-amber-400 tracking-wider">PHASE 03 // 遠景 • 亞東科大表演賽與未來</span>
+                    <h4 class="text-lg font-cinzel font-bold text-white editable-content" data-cms-id="journey-3-title">「將解決問題的勇氣融入血液」</h4>
+                    <p class="text-slate-300 text-sm leading-relaxed font-light editable-content" data-cms-id="journey-3-desc">
+                        獲邀至亞東科技大學進行示範表演賽時，看著大專先進們的讚許，我深刻明白：獎牌只是紀錄，真正寶貴的是創客精神——面對未知的程式 Bug 或突發硬體故障時，冷靜拆解問題並永不退縮。
+                    </p>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 創客登入 Modal 視窗 -->
+    <div id="loginModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center hidden p-4">
+        <div class="magic-card w-full max-w-md rounded-3xl p-8 border-2 border-amber-500/70 shadow-2xl relative animate-float">
+            <button onclick="closeLoginModal()" class="absolute top-4 right-4 text-slate-400 hover:text-amber-300 transition">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+
+            <div class="text-center space-y-2.5 mb-6">
+                <div class="w-14 h-14 rounded-full bg-amber-500/20 border border-amber-400 mx-auto flex items-center justify-center text-amber-300 text-2xl shadow-[0_0_15px_rgba(212,175,55,0.4)]">
+                    <i class="fa-solid fa-key animate-bounce"></i>
+                </div>
+                <h3 class="font-cinzel text-xl font-bold text-white">創客控制台身份驗證</h3>
+                <p class="text-xs text-amber-200/70 font-cinzel">請輸入管理帳號與密碼以開啟實時編輯權限</p>
+            </div>
+
+            <form onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-cinzel text-amber-300 mb-1">創客帳號 (Account)</label>
+                    <input type="text" id="loginAccount" required placeholder="請輸入帳號" class="w-full bg-potter-dark border border-amber-500/40 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-amber-400">
+                </div>
+                <div>
+                    <label class="block text-xs font-cinzel text-amber-300 mb-1">秘術密碼 (Password)</label>
+                    <input type="password" id="loginPassword" required placeholder="請輸入密碼" class="w-full bg-potter-dark border border-amber-500/40 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:border-amber-400">
+                </div>
+
+                <div id="loginError" class="text-red-400 text-xs hidden text-center bg-red-950/60 p-2.5 rounded-lg border border-red-800">
+                    <i class="fa-solid fa-triangle-exclamation"></i> 帳號或密碼錯誤！請重新驗證。
+                </div>
+
+                <button type="submit" class="w-full bg-gradient-to-r from-amber-600 via-yellow-500 to-amber-600 hover:from-amber-500 hover:to-yellow-400 text-black font-cinzel font-bold py-3.5 rounded-xl transition duration-300 shadow-xl mt-2 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-wand-magic"></i> 驗證登入並啟用編輯
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 圖片網址修改 Modal -->
+    <div id="imageModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 flex items-center justify-center hidden p-4">
+        <div class="magic-card w-full max-w-lg rounded-2xl p-6 border border-amber-500/60 relative shadow-2xl">
+            <h3 class="font-cinzel font-bold text-lg text-amber-300 mb-4"><i class="fa-solid fa-image"></i> 更換相片連結 (URL)</h3>
+            <div class="space-y-4 mb-6">
+                <div>
+                    <label class="text-xs text-amber-300 font-cinzel mb-1 block">第一張圖片網址</label>
+                    <input type="text" id="imageModalUrl1" placeholder="請貼上第一張圖片的 HTTP/HTTPS 網址" class="w-full bg-potter-dark border border-amber-500/40 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-amber-400">
+                </div>
+                <div>
+                    <label class="text-xs text-amber-300 font-cinzel mb-1 block">第二張圖片網址</label>
+                    <input type="text" id="imageModalUrl2" placeholder="請貼上第二張圖片的 HTTP/HTTPS 網址" class="w-full bg-potter-dark border border-amber-500/40 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-amber-400">
+                </div>
+            </div>
+            <div class="flex justify-end gap-3">
+                <button onclick="closeImageEditor()" class="px-4 py-2 text-xs text-slate-400 hover:text-white transition">取消</button>
+                <button onclick="applyImageEditor()" class="px-5 py-2 text-xs bg-amber-500 hover:bg-amber-400 text-black font-bold rounded-lg transition shadow">確認更換</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 圖片燈箱與縮放檢視 Modal -->
+    <div id="zoomModal" class="fixed inset-0 bg-black/95 backdrop-blur-lg z-50 flex flex-col items-center justify-center hidden p-4" onclick="closeZoomModal()">
+        <div class="relative max-w-4xl max-h-[85vh] p-2" onclick="event.stopPropagation()">
+            <button onclick="closeZoomModal()" class="absolute -top-12 right-0 text-amber-300 hover:text-white text-xl px-4 py-1.5 font-bold bg-potter-dark/80 rounded-lg border border-amber-500/40 transition">
+                <i class="fa-solid fa-xmark"></i> 關閉
+            </button>
+            <img id="zoomModalImg" src="" alt="放大檢視" class="max-w-full max-h-[80vh] object-contain rounded-2xl border-2 border-amber-500/60 shadow-2xl transition-transform duration-300 transform scale-100 hover:scale-105 cursor-zoom-in">
+            <p class="text-center text-xs text-amber-300/80 mt-4 font-cinzel">✨ 點擊圖片或移動滑鼠可近距離細看機器人與獎項細節</p>
+        </div>
+    </div>
+
+    <!-- 魔法動態訊息提示 Toast -->
+    <div id="cmsToast" class="fixed bottom-6 right-6 bg-slate-900 text-amber-300 border border-amber-500/60 px-6 py-3.5 rounded-2xl shadow-2xl z-50 flex items-center gap-3 transition-all duration-300 transform translate-y-10 opacity-0 hidden">
+        <i id="cmsToastIcon" class="fa-solid fa-wand-magic-sparkles text-amber-400 text-lg"></i>
+        <span id="cmsToastMsg" class="text-xs font-bold font-cinzel"></span>
+    </div>
+
+    <footer class="border-t border-amber-500/20 bg-potter-dark py-14 mt-28 text-center relative overflow-hidden">
+        <div class="max-w-4xl mx-auto px-6 flex flex-col items-center justify-center space-y-5 relative z-10">
+            <!-- QR Code 掃描區塊 -->
+            <div class="bg-amber-500/5 p-4 rounded-2xl border border-amber-500/30 magic-card transform hover:scale-105 transition-transform duration-300">
+                <div class="mb-2.5 text-[10px] text-amber-400 font-cinzel tracking-widest"><i class="fa-solid fa-qrcode mr-1"></i> SCAN TO VISIT PORTFOLIO</div>
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=https://zivwei0000-gif.github.io/my-portfolio/&color=D4AF37&bgcolor=06080D" alt="Portfolio QR Code" class="w-28 h-28 rounded-lg mx-auto border border-amber-500/50 shadow-inner">
+            </div>
+
+            <div class="font-cinzel text-xs tracking-widest gold-text pt-2">
+                YU-HSI WEI // ROBOTICS & MAKER CHRONICLES
+            </div>
+            <p class="text-[11px] text-slate-500 font-cinzel">&copy; 2026 魏語希 YU-HSI WEI. ALL RIGHTS RESERVED. POWERED BY JINGGUO MAKER CENTER.</p>
+        </div>
+    </footer>
+
+    <script>
+        let isCmsLoggedIn = false;
+        let activeTargetGalleryId = null;
+
+        function showToast(msg, isError = false) {
+            const toast = document.getElementById('cmsToast');
+            const toastMsg = document.getElementById('cmsToastMsg');
+            const toastIcon = document.getElementById('cmsToastIcon');
+            if (!toast) return;
+
+            toastMsg.innerText = msg;
+            if (isError) {
+                toast.className = 'fixed bottom-6 right-6 bg-red-950 text-red-200 border border-red-500/60 px-6 py-3.5 rounded-2xl shadow-2xl z-50 flex items-center gap-3 transition-all duration-300 transform';
+                toastIcon.className = 'fa-solid fa-triangle-exclamation text-red-400 text-lg';
+            } else {
+                toast.className = 'fixed bottom-6 right-6 bg-slate-900 text-amber-300 border border-amber-500/60 px-6 py-3.5 rounded-2xl shadow-2xl z-50 flex items-center gap-3 transition-all duration-300 transform';
+                toastIcon.className = 'fa-solid fa-wand-magic-sparkles text-amber-400 text-lg animate-spin-slow';
+            }
+
+            toast.classList.remove('hidden', 'translate-y-10', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-10', 'opacity-0');
+                setTimeout(() => toast.classList.add('hidden'), 300);
+            }, 3500);
+        }
+
+        // 圖片輪播狀態與自動跳動
+        const carouselIndices = { 1: 0, 2: 0, 3: 0 };
+        const carouselCounts = { 1: 2, 2: 2, 3: 2 };
+
+        function showSlide(galleryId, index) {
+            const images = document.querySelectorAll(`.carousel-img-${galleryId}`);
+            images.forEach((img, idx) => {
+                if (idx === index) {
+                    img.classList.add('active-slide');
+                } else {
+                    img.classList.remove('active-slide');
+                }
+            });
+            carouselIndices[galleryId] = index;
+        }
+
+        function nextSlide(galleryId) {
+            let nextIdx = (carouselIndices[galleryId] + 1) % carouselCounts[galleryId];
+            showSlide(galleryId, nextIdx);
+        }
+
+        function prevSlide(galleryId) {
+            let prevIdx = (carouselIndices[galleryId] - 1 + carouselCounts[galleryId]) % carouselCounts[galleryId];
+            showSlide(galleryId, prevIdx);
+        }
+
+        // 縮放燈箱 Modal 控制
+        function openZoomModal(imgSrc) {
+            document.getElementById('zoomModalImg').src = imgSrc;
+            document.getElementById('zoomModal').classList.remove('hidden');
+        }
+
+        function closeZoomModal() {
+            document.getElementById('zoomModal').classList.add('hidden');
+        }
+
+        function openLightbox(imgSrc) {
+            openZoomModal(imgSrc);
+        }
+
+        function openLoginModal() {
+            document.getElementById('loginModal').classList.remove('hidden');
+            document.getElementById('loginError').classList.add('hidden');
+        }
+
+        function closeLoginModal() {
+            document.getElementById('loginModal').classList.add('hidden');
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const acc = document.getElementById('loginAccount').value.trim();
+            const pwd = document.getElementById('loginPassword').value.trim();
+
+            if (acc === 'zivwei0000' && pwd === 'ws27182718') {
+                isCmsLoggedIn = true;
+                closeLoginModal();
+                enableCmsMode();
+                showToast('✨ 創客身分驗證成功！點擊文字即可直接修改內容');
+            } else {
+                document.getElementById('loginError').classList.remove('hidden');
+            }
+        }
+
+        function enableCmsMode() {
+            document.getElementById('cmsAdminBar').classList.remove('hidden');
+            document.getElementById('mainNavbar').style.top = '36px';
+
+            document.querySelectorAll('.editable-content').forEach(el => {
+                el.contentEditable = "true";
+                el.classList.add('cms-editable-active');
+            });
+
+            document.querySelectorAll('.cms-only-btn').forEach(btn => {
+                btn.classList.remove('hidden');
+            });
+        }
+
+        function logoutCms() {
+            isCmsLoggedIn = false;
+            document.getElementById('cmsAdminBar').classList.add('hidden');
+            document.getElementById('mainNavbar').style.top = '0px';
+
+            document.querySelectorAll('.editable-content').forEach(el => {
+                el.contentEditable = "false";
+                el.classList.remove('cms-editable-active');
+            });
+
+            document.querySelectorAll('.cms-only-btn').forEach(btn => {
+                btn.classList.add('hidden');
+            });
+        }
+
+        function saveCmsData(silent = false) {
+            const cmsData = {};
+            document.querySelectorAll('.editable-content').forEach(el => {
+                const id = el.getAttribute('data-cms-id');
+                if (id) {
+                    cmsData[id] = el.innerHTML;
+                }
+            });
+
+            ['1', '2', '3'].forEach(galleryId => {
+                const img1 = document.getElementById(`carousel-img-${galleryId}-1`);
+                const img2 = document.getElementById(`carousel-img-${galleryId}-2`);
+                if (img1) cmsData[`carousel-img-${galleryId}-1`] = img1.src;
+                if (img2) cmsData[`carousel-img-${galleryId}-2`] = img2.src;
+            });
+
+            localStorage.setItem('yuHsi_cms_data', JSON.stringify(cmsData));
+            if (!silent) {
+                showToast('💾 所有修改已儲存至本機快取！');
+            }
+        }
+
+        function exportFullHtml() {
+            const cloneDoc = document.cloneNode(true);
+            
+            // 清除編輯態樣式與按鈕，確保匯出的 HTML 為發布狀態
+            cloneDoc.querySelectorAll('.cms-editable-active').forEach(el => {
+                el.removeAttribute('contenteditable');
+                el.classList.remove('cms-editable-active');
+            });
+            cloneDoc.querySelectorAll('.cms-only-btn').forEach(btn => {
+                btn.classList.add('hidden');
+            });
+            const adminBar = cloneDoc.getElementById('cmsAdminBar');
+            if (adminBar) adminBar.classList.add('hidden');
+            const navbar = cloneDoc.getElementById('mainNavbar');
+            if (navbar) navbar.style.top = '0px';
+
+            const fullContent = "<!DOCTYPE html>\n" + cloneDoc.documentElement.outerHTML;
+            const blob = new Blob([fullContent], { type: 'text/html;charset=utf-8' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'index.html';
+            a.click();
+            URL.revokeObjectURL(a.href);
+            showToast('🚀 已成功下載 index.html！上傳至 GitHub 即可永久公開生效');
+        }
+
+        function exportJsonData() {
+            saveCmsData(true);
+            const saved = localStorage.getItem('yuHsi_cms_data') || '{}';
+            const blob = new Blob([saved], { type: 'application/json' });
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = 'yuHsi_portfolio_backup.json';
+            a.click();
+            URL.revokeObjectURL(a.href);
+            showToast('📤 已匯出設定備份檔 (JSON)');
+        }
+
+        function importJsonData() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = e => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = ev => {
+                    try {
+                        const parsed = JSON.parse(ev.target.result);
+                        localStorage.setItem('yuHsi_cms_data', JSON.stringify(parsed));
+                        loadCmsData();
+                        showToast('✨ 成功匯入設定檔！頁面內容已更新');
+                    } catch(err) {
+                        showToast('❌ 匯入失敗，請選擇正確的 JSON 設定檔', true);
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        }
+
+        function loadCmsData() {
+            const saved = localStorage.getItem('yuHsi_cms_data');
+            if (!saved) {
+                const img1 = document.getElementById('carousel-img-1-1');
+                if (img1) {
+                    img1.src = 'https://ai-code-editor.googleusercontent.com/user_files/image_9afad7.jpg';
+                }
+                return;
+            }
+            try {
+                const cmsData = JSON.parse(saved);
+                document.querySelectorAll('.editable-content').forEach(el => {
+                    const id = el.getAttribute('data-cms-id');
+                    if (id && cmsData[id]) {
+                        el.innerHTML = cmsData[id];
+                    }
+                });
+
+                ['1', '2', '3'].forEach(galleryId => {
+                    const img1 = document.getElementById(`carousel-img-${galleryId}-1`);
+                    const img2 = document.getElementById(`carousel-img-${galleryId}-2`);
+                    if (img1 && cmsData[`carousel-img-${galleryId}-1`]) img1.src = cmsData[`carousel-img-${galleryId}-1`];
+                    if (img2 && cmsData[`carousel-img-${galleryId}-2`]) img2.src = cmsData[`carousel-img-${galleryId}-2`];
+                });
+            } catch (err) {
+                console.error('載入快取失敗', err);
+            }
+        }
+
+        function openImageEditor(galleryId) {
+            activeTargetGalleryId = galleryId;
+            const img1 = document.getElementById(`carousel-img-${galleryId}-1`);
+            const img2 = document.getElementById(`carousel-img-${galleryId}-2`);
+            
+            document.getElementById('imageModalUrl1').value = img1 ? img1.src : '';
+            document.getElementById('imageModalUrl2').value = img2 ? img2.src : '';
+            document.getElementById('imageModal').classList.remove('hidden');
+        }
+
+        function closeImageEditor() {
+            document.getElementById('imageModal').classList.add('hidden');
+        }
+
+        function applyImageEditor() {
+            const url1 = document.getElementById('imageModalUrl1').value.trim();
+            const url2 = document.getElementById('imageModalUrl2').value.trim();
+            
+            if (activeTargetGalleryId) {
+                const img1 = document.getElementById(`carousel-img-${activeTargetGalleryId}-1`);
+                const img2 = document.getElementById(`carousel-img-${activeTargetGalleryId}-2`);
+                
+                if (img1 && url1) img1.src = url1;
+                if (img2 && url2) img2.src = url2;
+            }
+            closeImageEditor();
+            showToast('📷 已更換相片連結！');
+        }
+
+        window.onload = function() {
+            loadCmsData();
+            const img1_1 = document.getElementById('carousel-img-1-1');
+            const img2_1 = document.getElementById('carousel-img-2-1');
+            
+            if (img1_1 && (!localStorage.getItem('yuHsi_cms_data') || !JSON.parse(localStorage.getItem('yuHsi_cms_data'))['carousel-img-1-1'])) {
+                img1_1.src = 'https://ai-code-editor.googleusercontent.com/user_files/image_9afad7.jpg';
+            }
+            if (img2_1 && (!localStorage.getItem('yuHsi_cms_data') || !JSON.parse(localStorage.getItem('yuHsi_cms_data'))['carousel-img-2-1'])) {
+                img2_1.src = 'https://ai-code-editor.googleusercontent.com/user_files/image_9b0160.jpg';
+            }
+        };
+    </script>
+</body>
+</html>
